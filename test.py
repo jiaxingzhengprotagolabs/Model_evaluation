@@ -368,6 +368,7 @@ def mAP(dicts, k):
 
 
 ## MRR
+## 对于每个问句只考虑第一个找到的label为1的rank（q）
 def mRR(dicts):
 	if dicts == None:
 		print("Please load your test set!")
@@ -378,6 +379,7 @@ def mRR(dicts):
 		for j in range(len(dicts[0])):
 			if(dicts[i][j][3] == 1):
 				sum1 += 1 / (j + 1)
+				break;
 
 	return sum1 / len(dicts)
 
