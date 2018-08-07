@@ -319,6 +319,7 @@ def evaluation_data_gen(query, ground_truth, title):
 
 
 ### precision@k  k from 1 to n: represent the rank order
+## precision@k is the average number for all of the test question's top k precision
 def precision(dicts, k):
 	if dicts == None:
 		print("Please load your test set!")
@@ -329,13 +330,16 @@ def precision(dicts, k):
 	
 	sum = 0
 	lens = len(dicts)
-	## 对于sample中每一个rank为k的问答句pair precision@k = sum / sample中所有rank为k的问句总数
+	
 	for i in range(lens):
-		#print(test_question_res[i][1][3])
-		sum += dicts[i][k-1][3]
-
+		sum2 = 0
+		for j in range(k):
+			sum2 += dicts[i][j][3]
+		sum += sum2 / k
 	precision = sum / len(dicts)
 	return precision
+
+
 
 
 
@@ -368,7 +372,6 @@ def mAP(dicts, k):
 
 
 ## MRR
-## 对于每个问句只考虑第一个找到的label为1的rank（q）
 def mRR(dicts):
 	if dicts == None:
 		print("Please load your test set!")
@@ -383,7 +386,6 @@ def mRR(dicts):
 
 	return sum1 / len(dicts)
 
-
 ## Z is a constant number
 
 
@@ -395,6 +397,10 @@ def nDCG(dicts, k):
 	if k <= 0 or k > len(dicts):
 		print("please input a valid value for k, which is from 1  to" + len(dicts))
 		return 0
+
+	iDCG = 0
+	for i in range(k):
+		iDCG += 1 / np.log(i+2)
 	
 	sum1 = 0
 	for i in range(len(dicts)):
@@ -402,7 +408,7 @@ def nDCG(dicts, k):
 		for j in range(k):
 			sum2 += (2**(dicts[i][j][3]) - 1) / np.log(1 + (i+1))
 		
-		sum1 += sum2 / (1.5 + 1 / np.log(3))
+		sum1 += sum2 / iDCG
 					 
 		return sum1 / len(dicts)
 
